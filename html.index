@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Aves de Chile</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inconsolata:wght@400;600&display=swap" rel="stylesheet">
+        <style>
+            body {
+                font-family: "Inconsolata", monospace;
+                background-color: #f0f4fa;
+                color: #0d1f3c;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* HEADER */
+            #header {
+                background-color: #0d1f3c;
+                padding: 2.5rem 2rem;
+                color: white;
+            }
+
+            #header-inner {
+                max-width: 680px;
+                margin: 0 auto;
+            }
+
+            .tag-superior {
+                font-size: 0.7rem;
+                letter-spacing: 0.15rem;
+                text-transform: uppercase;
+                color: #aad4f8;
+                margin-bottom: 0.8rem;
+            }
+
+            h1 {
+                font-family: "Playfair Display", serif;
+                font-size: 3rem;
+                font-weight: 700;
+                color: #f0f4fa;
+                margin: 0 0 1rem 0;
+                line-height: 1.1;
+            }
+
+            h1 em {
+                color: #aad4f8;
+                font-style: normal;
+            }
+
+            .descripcion-header {
+                font-size: 0.9rem;
+                color: rgba(240, 244, 250, 0.75);
+                line-height: 1.6;
+                margin-bottom: 1.2rem;
+            }
+
+            .link-header {
+                color: #aad4f8;
+                font-size: 0.82rem;
+                text-decoration: underline;
+            }
+
+            /* CONTENEDOR PRINCIPAL */
+            #contenedor {
+                max-width: 680px;
+                margin: 0 auto;
+                padding: 2rem 2rem 3rem;
+            }
+
+            /* SELECT */
+            .filtro-wrapper {
+                margin-bottom: 2rem;
+                padding: 1.2rem;
+                background: white;
+                border-left: 4px solid #2e6fca;
+            }
+
+            .filtro-wrapper label {
+                display: block;
+                font-size: 0.72rem;
+                font-weight: 600;
+                letter-spacing: 0.1rem;
+                text-transform: uppercase;
+                color: #3a5278;
+                margin-bottom: 0.6rem;
+            }
+
+            #filtro-especie {
+                font-family: "Inconsolata", monospace;
+                font-size: 0.95rem;
+                padding: 0.5rem 0.8rem;
+                border: 1.5px solid #dce6f5;
+                background-color: #f0f4fa;
+                color: #0d1f3c;
+                min-width: 230px;
+            }
+
+            #filtro-especie:focus {
+                outline: none;
+                border-color: #2e6fca;
+            }
+
+            /* SECCIONES AVES */
+            .seccion-aves {
+                display: none;
+            }
+
+            .seccion-aves.visible {
+                display: block;
+            }
+
+            h2 {
+                font-family: "Playfair Display", serif;
+                font-size: 1.6rem;
+                font-weight: 700;
+                color: #0d1f3c;
+                margin-bottom: 0.5rem;
+                padding-bottom: 0.4rem;
+                border-bottom: 2px solid #7eb8f0;
+                display: inline-block;
+            }
+
+            .seccion-aves > p {
+                font-size: 0.88rem;
+                color: #3a5278;
+                line-height: 1.7;
+                margin: 0.8rem 0 0.5rem;
+            }
+
+            ol {
+                list-style: none;
+                padding: 0;
+                margin: 1rem 0;
+                counter-reset: ave-counter;
+            }
+
+            ol li {
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+                padding: 0.5rem 0.4rem;
+                border-bottom: 1px solid #dce6f5;
+                counter-increment: ave-counter;
+            }
+
+            ol li::before {
+                content: counter(ave-counter, decimal-leading-zero);
+                font-size: 0.65rem;
+                color: #7eb8f0;
+                font-weight: 600;
+                min-width: 1.6rem;
+            }
+
+            .tiny {
+                width: 2.2rem;
+                height: 2.2rem;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid #dce6f5;
+                flex-shrink: 0;
+            }
+
+            /* GRÁFICO */
+            #seccion-grafico {
+                margin-top: 2.5rem;
+            }
+
+            .seccion-titulo {
+                margin-bottom: 1.2rem;
+            }
+
+            #grafico-wrapper {
+                background: white;
+                padding: 1.2rem;
+                border: 1px solid #dce6f5;
+            }
+
+            #grafico-loading {
+                text-align: center;
+                padding: 1.5rem;
+                color: #3a5278;
+                font-size: 0.85rem;
+            }
+
+            .barra-fila {
+                display: flex;
+                align-items: center;
+                margin-bottom: 0.7rem;
+                gap: 0.7rem;
+            }
+
+            .barra-etiqueta {
+                font-size: 0.75rem;
+                color: #3a5278;
+                width: 130px;
+                text-align: right;
+            }
+
+            .barra-contenedor {
+                flex: 1;
+                height: 1.4rem;
+                background-color: #dce6f5;
+                overflow: hidden;
+            }
+
+            .barra-relleno {
+                height: 100%;
+                background-color: #1a4a8a;
+                width: 0%;
+                transition: width 0.8s ease;
+            }
+
+            .barra-relleno.dorado {
+                background-color: #2e6fca;
+            }
+
+            .barra-valor {
+                font-size: 0.72rem;
+                font-weight: 600;
+                min-width: 1.6rem;
+            }
+
+            .leyenda-grafico {
+                display: flex;
+                gap: 1.5rem;
+                margin-top: 1rem;
+                padding-top: 0.8rem;
+                border-top: 1px solid #dce6f5;
+                flex-wrap: wrap;
+                font-size: 0.75rem;
+                color: #3a5278;
+            }
+
+            .leyenda-item {
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+            }
+
+            .leyenda-color {
+                width: 1rem;
+                height: 0.5rem;
+            }
+
+            .leyenda-color.verde {
+                background-color: #1a4a8a;
+            }
+
+            .leyenda-color.dorado {
+                background-color: #2e6fca;
+            }
+        </style>
+    </head>
+    <body>
+
+        <!-- HEADER -->
+        <div id="header">
+            <div id="header-inner">
+                <div class="tag-superior">Biodiversidad · Chile</div>
+                <h1>Aves de <em>Chile</em></h1>
+                <p class="descripcion-header">
+                    Chile posee características geográficas únicas que permiten una rica biodiversidad aviar. Aquí exploramos las especies nativas y endémicas de nuestro territorio.
+                </p>
+                <a href="https://www.wwf.cl/?367212/Nativo-Endemico-y-Exotico-tres-importantes-conceptos-que-debes-conocer" target="_blank" class="link-header">
+                    → Visitar World Wildlife Fund for Nature
+                </a>
+            </div>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div id="contenedor">
+
+            <!-- SELECT FILTRO -->
+            <div class="filtro-wrapper">
+                <label for="filtro-especie">Mostrar aves por tipo</label>
+                <select id="filtro-especie">
+                    <option value="">— Selecciona un grupo —</option>
+                    <option value="endemica">Endémicas de Chile</option>
+                    <option value="nativa">Nativas</option>
+                </select>
+            </div>
+
+            <!-- SECCIÓN ENDÉMICA -->
+            <div id="seccion-endemica" class="seccion-aves">
+                <h2>Endémica de Chile</h2>
+                <p>Las especies endémicas son aquellas que habitan de manera natural en un solo espacio determinado, esto puede ser en un continente, un país, una isla o zona en particular y también en una región con límites administrativos o biogeográficos.</p>
+                <ol id="dos"></ol>
+            </div>
+
+            <!-- SECCIÓN NATIVA -->
+            <div id="seccion-nativa" class="seccion-aves">
+                <h2>Nativas</h2>
+                <p>Según la definición del Ministerio del Medio Ambiente (MMA), "las especies nativas corresponden a aquellas que viven de forma natural en Chile, es decir, que se cree que se originaron o llegaron naturalmente al país, sin intervención humana".</p>
+                <ol id="uno"></ol>
+            </div>
+
+            <!-- GRÁFICO -->
+            <div id="seccion-grafico">
+                <div class="seccion-titulo">
+                    <h2>Distribución por tipo</h2>
+                </div>
+                <div id="grafico-wrapper">
+                    <div id="grafico-loading">Cargando datos</div>
+                    <div id="grafico-barras" style="display:none;"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            fetch("https://api.myjson.online/v1/records/b4cc6491-a885-4cf0-8760-c06ccd90e3ce")
+                .then((respuesta) => {
+                    if (!respuesta.ok) throw new Error("Error HTTP: " + respuesta.status);
+                    return respuesta.json();
+                })
+                .then((datos) => {
+                    var aves = datos.data;
+                    console.log("Datos recibidos:", aves);
+
+                    const primero = document.getElementById("uno");
+                    const segundo = document.getElementById("dos");
+
+                    // Conteo por tipo para el gráfico
+                    const conteo = {};
+
+                    aves.forEach((x) => {
+                        // Poblar listas
+                        if (x.info.species.value.includes("Nativa")) {
+                            primero.innerHTML += `<li><img src="${x.image.url}" class="tiny"/>${x.names.spanish}</li>`;
+                        }
+                        if (x.info.species.value.includes("Endemica de Chile")) {
+                            segundo.innerHTML += `<li><img src="${x.image.url}" class="tiny"/>${x.names.spanish}</li>`;
+                        }
+
+                        // Contar para gráfico
+                        const tipo = x.info.species.value || "Sin clasificar";
+                        conteo[tipo] = (conteo[tipo] || 0) + 1;
+                    });
+
+                    // Renderizar gráfico
+                    renderizarGrafico(conteo);
+                })
+                .catch((error) => {
+                    console.error("Algo salió mal:", error);
+                    document.getElementById("grafico-loading").textContent = "No se pudieron cargar los datos.";
+                });
+
+            function renderizarGrafico(conteo) {
+                const wrapper = document.getElementById("grafico-barras");
+                const loading = document.getElementById("grafico-loading");
+
+                const entradas = Object.entries(conteo).sort((a, b) => b[1] - a[1]);
+                const maximo = entradas[0][1];
+                const total = entradas.reduce((acc, e) => acc + e[1], 0);
+
+                // Etiquetas más cortas para mostrar
+                const etiquetas = {
+                    "Endemica de Chile": "Endémica de Chile",
+                    "Nativa": "Nativa",
+                };
+
+                // Tipos que van en dorado (endémicas)
+                const esEndemica = (k) => k.toLowerCase().includes("endem");
+
+                let html = '';
+                entradas.forEach(([tipo, cantidad], i) => {
+                    const pct = Math.round((cantidad / maximo) * 100);
+                    const etiqueta = etiquetas[tipo] || tipo;
+                    const claseColor = esEndemica(tipo) ? 'dorado' : '';
+                    html += `
+                        <div class="barra-fila">
+                            <div class="barra-etiqueta">${etiqueta}</div>
+                            <div class="barra-contenedor">
+                                <div class="barra-relleno ${claseColor}" data-pct="${pct}" style="width:0%"></div>
+                            </div>
+                            <div class="barra-valor">${cantidad}</div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                    <div class="leyenda-grafico">
+                        <div class="leyenda-item">
+                            <div class="leyenda-color verde"></div>
+                            <span>Nativa</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <div class="leyenda-color dorado"></div>
+                            <span>Endémica de Chile</span>
+                        </div>
+                        <div class="leyenda-item" style="margin-left:auto;">
+                            <span>Total de especies: <strong>${total}</strong></span>
+                        </div>
+                    </div>
+                `;
+
+                wrapper.innerHTML = html;
+                loading.style.display = 'none';
+                wrapper.style.display = 'block';
+
+                // Animar barras con pequeño delay
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        wrapper.querySelectorAll('.barra-relleno').forEach(barra => {
+                            barra.style.width = barra.dataset.pct + '%';
+                        });
+                    }, 100);
+                });
+            }
+
+            // SELECT: mostrar/ocultar secciones
+            document.getElementById("filtro-especie").addEventListener("change", function () {
+                const valor = this.value;
+
+                document.getElementById("seccion-endemica").classList.remove("visible");
+                document.getElementById("seccion-nativa").classList.remove("visible");
+
+                if (valor === "endemica") {
+                    document.getElementById("seccion-endemica").classList.add("visible");
+                } else if (valor === "nativa") {
+                    document.getElementById("seccion-nativa").classList.add("visible");
+                }
+            });
+        </script>
+    </body>
+</html>
